@@ -4,6 +4,7 @@
 .ipynb_checkpoints
 *.pyc
 parser/
+spring/
 /stanford-corenlp-*
 *.db*
 downloads/
