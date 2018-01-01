@@ -256,7 +256,7 @@ class Viewer(widgets.DOMWidget):
 
 class ImageViewer(Viewer):
     """Viewer for Image candidates"""
-    def __init__(self, candidates, session, image_folder_path, gold=[], n_per_page=2, height=350, annotator_name=None, LF_debug=None):
+    def __init__(self, candidates, session, image_folder_path, gold=[], n_per_page=1, height=250, annotator_name=None, LF_debug=None):
         self.image_folder_path = image_folder_path
         self.LF_debug = LF_debug
 
@@ -264,15 +264,15 @@ class ImageViewer(Viewer):
 
     def _tag_context(self, context, candidates, gold):
         title = context.image.name
-        debug_desc = ""
+        debug_html = ""
 
         if self.LF_debug:
             label, debug_value = self.LF_debug(context, debug=True)
-            debug_desc = "<br/>%s ==> %s (%s)" % (self.LF_debug.__name__, self.desc_label(label), debug_value)
+            debug_html = "%s ==> %s, %s" % (self.LF_debug.__name__, self.desc_label(label), debug_value)
 
-        img_html = "<img src='%s' width='100' height='100'/>" % os.path.join(self.image_folder_path, context.image.name)
+        img_html = "<img src='%s' width='175' height='175'/>" % os.path.join(self.image_folder_path, context.image.name)
 
-        return "%s%s<br/>%s" % (title, debug_desc, img_html)
+        return "%s<br/><table><tr><td>%s</td><td>%s</td></tr></table>" % (title, img_html, debug_html)
 
 
 class SentenceNgramViewer(Viewer):
