@@ -186,6 +186,32 @@ class TemporaryContext(object):
         raise NotImplementedError()
 
 
+class TemporaryImage(TemporaryContext):
+    def __init__(self, image):
+        super(TemporaryImage, self).__init__()
+        self.image = image
+
+    def __eq__(self, other):
+        return self.image.stable_id == other.image.stable_id
+
+    def __ne__(self, other):
+        return self.image.stable_id != other.image.stable_id
+
+    def __hash__(self):
+        return hash(self.image.stable_id)
+
+    def get_stable_id(self):
+        return self.image.stable_id
+
+    def _get_table_name(self):
+        return 'image'
+
+    def _get_polymorphic_identity(self):
+        return 'image'
+
+ 
+
+
 class TemporarySpan(TemporaryContext):
     """The TemporaryContext version of Span"""
     def __init__(self, sentence, char_start, char_end, meta=None):
@@ -366,3 +392,20 @@ def construct_stable_id(parent_context, polymorphic_type, relative_char_offset_s
     start = parent_doc_char_start + relative_char_offset_start
     end   = parent_doc_char_start + relative_char_offset_end
     return "%s::%s:%s:%s" % (doc_id, polymorphic_type, start, end)
+
+
+class Image(Context):
+    __tablename__ = 'image'
+    id = Column(Integer, ForeignKey('context.id', ondelete='CASCADE'), primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    meta = Column(PickleType)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'image',
+    }
+
+    def __repr__(self):
+        return "Image: %s" % self.name
+
+    def get_parent(self):
+        return None

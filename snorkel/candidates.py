@@ -11,7 +11,7 @@ from itertools import product
 import re
 from sqlalchemy.sql import select
 
-from .models import Candidate, TemporarySpan, Sentence
+from .models import Candidate, TemporarySpan, Sentence, TemporaryImage
 from .udf import UDF, UDFRunner
 
 QUEUE_COLLECT_TIMEOUT = 5
@@ -136,6 +136,11 @@ class CandidateSpace(object):
 
     def apply(self, x):
         raise NotImplementedError()
+
+
+class ImagesSpace(CandidateSpace):
+    def apply(self, img):
+        yield TemporaryImage(img)
 
 
 class Ngrams(CandidateSpace):

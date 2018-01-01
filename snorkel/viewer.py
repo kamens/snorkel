@@ -76,8 +76,8 @@ class Viewer(widgets.DOMWidget):
         # Hence, we index by their position in this list
         # We get the sorted candidates and all contexts required, either from unary or binary candidates
         self.gold       = list(gold)
-        self.candidates = sorted(list(candidates), key=lambda c : c[0].char_start)
-        self.contexts   = list(set(c[0].get_parent() for c in self.candidates + self.gold))
+        self.candidates = list(candidates)
+        self.contexts   = list(set(self.candidates + self.gold))
         
         # If committed, sort contexts by id
         try:
@@ -244,6 +244,35 @@ class Viewer(widgets.DOMWidget):
 
     def get_selected(self):
         return self.candidates[self._selected_cid]
+
+    def desc_label(self, label):
+        if label == 1:
+            return "True"
+        elif label == -1:
+            return "False"
+        else:
+            return "Undecided"
+
+
+class ImageViewer(Viewer):
+    """Viewer for Image candidates"""
+    def __init__(self, candidates, session, image_folder_path, gold=[], n_per_page=2, height=350, annotator_name=None, LF_debug=None):
+        self.image_folder_path = image_folder_path
+        self.LF_debug = LF_debug
+
+        super(ImageViewer, self).__init__(candidates, session, gold=gold, n_per_page=n_per_page, height=height, annotator_name=annotator_name)
+
+    def _tag_context(self, context, candidates, gold):
+        title = context.image.name
+        debug_desc = ""
+
+        if self.LF_debug:
+            label, debug_value = self.LF_debug(context, debug=True)
+            debug_desc = "<br/>%s ==> %s (%s)" % (self.LF_debug.__name__, self.desc_label(label), debug_value)
+
+        img_html = "<img src='%s' width='100' height='100'/>" % os.path.join(self.image_folder_path, context.image.name)
+
+        return "%s%s<br/>%s" % (title, debug_desc, img_html)
 
 
 class SentenceNgramViewer(Viewer):

@@ -77,6 +77,11 @@ class Matcher(object):
                 yield c
 
 
+class ImageMatcher(Matcher):
+    def f(self, c):
+        return True
+
+
 WORDS = 'words'
 
 class NgramMatcher(Matcher):
